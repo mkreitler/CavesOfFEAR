@@ -1,0 +1,1 @@
+// Power card object.
