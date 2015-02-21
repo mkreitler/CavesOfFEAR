@@ -1,6 +1,25 @@
 // Repository for game-specific modules.
 
-game.isometricLayout = {
+game = {
+  res: {font: null,
+        numFont: null,
+        powerCards: null,
+        skillCards: null,
+        
+      },
+
+    spriteSheets: { powerCards: null,
+                    skillCards: null,
+                  },
+
+    CARD_TYPE: {NONE: 0, SKILL: 1, POWER: 2},
+
+    bFirstSession: true,
+};
+
+game.modules = {};
+
+game.modules.isometricLayout = {
   isLongRow: function(row) {
     return row % 2 === 0;
   },

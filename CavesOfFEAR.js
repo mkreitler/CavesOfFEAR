@@ -7,34 +7,23 @@
 //   Operand Node
 // PlayDemo state
 
-game = {
-  res: {font: null,
-        numFont: null,
-        powerCards: null,
-        skillCards: null,
-        
-      },
-
-    spriteSheets: { powerCards: null,
-                    skillCards: null,
-                  },
-
-    CARD_TYPE: {NONE: 0, SKILL: 1, POWER: 2},
-
-    bFirstSession: true,
-};
-
 game.COF = new glob.NewGlobType(
   // Class Definitions --------------------------------------------------------
   {
     TITLE_FONT_SIZE: 100,
     TITLE_OPTION_SIZE: 33,
+
+    MAX_POWER: 9,
   },
   [
   // Instance Definitions -----------------------------------------------------
+    // Engine Modules
     glob.GameState.stateMachine,
     glob.Transitions.InLinear,
     glob.Transitions.OutLinear,
+
+    // Game Modules
+    game.modules.statePlayDemo,
 
     {
       init: function() {
@@ -83,14 +72,9 @@ game.COF = new glob.NewGlobType(
         },
 
         draw: function(ctxt) {
-          var key = null,
-              alpha = glob.Graphics.getGlobalAlpha();
+          var key = null;
 
-          glob.Graphics.setGlobalAlpha(1.0);
-
-          glob.Graphics.clearTo(glob.Graphics.BLACK);
-
-          glob.Graphics.setGlobalAlpha(alpha);
+          this.clearBackground(ctxt);
 
           for (key in this.menuLabels) {
             if (this.menuLabels[key]) {
@@ -100,11 +84,22 @@ game.COF = new glob.NewGlobType(
         },
 
         onStartDemo: function() {
+          this.setState(game.modules.statePlayDemo);
           // this.startTransOutLinear(this.startSoloSession, this.transOutDraw.bind(this), this.transOutUpdate.bind(this), game.COF.TRANSITION_PERIOD, true);
         },
       },
 
       // Implementation =======================================================
+      clearBackground: function(ctxt) {
+          var alpha = glob.Graphics.getGlobalAlpha();
+
+          glob.Graphics.setGlobalAlpha(1.0);
+
+          glob.Graphics.clearTo(glob.Graphics.BLACK);
+
+          glob.Graphics.setGlobalAlpha(alpha);
+      },
+
       registerMenu: function() {
         for (key in this.menuLabels) {
           if (this.menuLabels[key]) {
@@ -138,11 +133,6 @@ game.COF = new glob.NewGlobType(
         glob.Graphics.setScreenOffset(0, Math.round(glob.Graphics.getHeight() * (1.0 - this.transParam)));
       },
 
-      startSoloSession: function() {
-        this.setState(null);
-        this.currentSession = new game.Session(this);
-      },
-
       setUpGame: function() {
         var args = null;
 
@@ -171,8 +161,8 @@ game.COF = new glob.NewGlobType(
         args.onClickedCallback = this.titleState.onStartDemo.bind(this);
         this.menuLabels.soloGame = new glob.GUI.Label(args);
 
-        game.spriteSheets.powerCards = new glob.SpriteSheetGlob(game.res.powerCards, 1, 10);
-        game.spriteSheets.skillCards = new glob.SpriteSheetGlob(game.res.skillCards, 1, 4);
+        game.spriteSheets.powerCards = new glob.SpriteSheetGlob(game.res.powerCards, 1, 3);
+        game.spriteSheets.skillCards = new glob.SpriteSheetGlob(game.res.skillCards, 1, 8);
       },
     },
   ]
