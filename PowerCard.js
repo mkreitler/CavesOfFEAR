@@ -10,6 +10,8 @@ game.PowerCard = new glob.NewGlobType(
     game.ModuleCard,
 
     {
+      DIGIT_COLOR: "white",
+      
       // Instance Definitions ---------------------------------------------------
       createCopy: function() {
         var copy = new game.PowerCard({
@@ -36,7 +38,7 @@ game.PowerCard = new glob.NewGlobType(
           bounds = this.panel.getBoundsRef();
           x = bounds.x + bounds.w / 6;
           y = bounds.y + bounds.h / 10;
-          game.res.font.draw(ctxt, "" + this.value, x, y, "red", 32, 0.5, 0.5);
+          game.res.font.draw(ctxt, "" + this.value, x, y, this.DIGIT_COLOR, 32, 0.5, 0.5);
         }
       },
 
