@@ -138,14 +138,6 @@ game.modules.statePlayDemo = {
     }
   },
 
-  cardOffsetX: function() {
-    return Math.round(game.spriteSheets.skillCards.getCellWidth() / 3);
-  },
-
-  cardOffsetY: function() {
-    return Math.round(game.spriteSheets.skillCards.getCellHeight() / 20);
-  },
-
   createCards: function() {
     var iCard = 0,
         card = null;
@@ -156,8 +148,8 @@ game.modules.statePlayDemo = {
         spriteSheet: game.spriteSheets.skillCards,
         frameIndex: iCard,
         bDraggable: true,
-        x: this.skillStack.x + iCard * this.cardOffsetX(),
-        y: this.skillStack.y + iCard % this.STACK_STAGGER_PERIOD * this.cardOffsetY(),
+        x: this.skillStack.x + iCard * game.cardOffsetX(),
+        y: this.skillStack.y + iCard % this.STACK_STAGGER_PERIOD * game.cardOffsetY(),
         value: iCard,
         stack: this.skillStack,
         // TODO: add remaining args.
@@ -189,8 +181,8 @@ game.modules.statePlayDemo = {
         spriteSheet: game.spriteSheets.powerCards,
         frameIndex: game.PowerCard.SUITS.COMBAT_POWER,
         bDraggable: true,
-        x: this.powerStack.x + iCard * this.cardOffsetX(),
-        y: this.powerStack.y + iCard % this.STACK_STAGGER_PERIOD * this.cardOffsetY(),
+        x: this.powerStack.x + iCard * game.cardOffsetX(),
+        y: this.powerStack.y + iCard % this.STACK_STAGGER_PERIOD * game.cardOffsetY(),
         value: iCard + 1,
         stack: this.powerStack,
         // TODO: add remaining args.

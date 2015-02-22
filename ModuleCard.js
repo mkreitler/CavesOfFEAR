@@ -31,6 +31,10 @@ game.ModuleCard = {
     this.depth = -1;
   },
 
+  getDepth: function() {
+    return this.depth;
+  },
+
   setDepth: function(newDepth) {
     this.depth = newDepth;
   },

@@ -15,6 +15,14 @@ game = {
     CARD_TYPE: {NONE: 0, SKILL: 1, POWER: 2},
 
     bFirstSession: true,
+
+    cardOffsetX: function() {
+      return Math.round(this.spriteSheets.skillCards.getCellWidth() / 3);
+    },
+
+    cardOffsetY: function() {
+      return Math.round(this.spriteSheets.skillCards.getCellHeight() / 20);
+    },
 };
 
 game.modules = {};

@@ -137,6 +137,8 @@ game.EquationGrid = new glob.NewGlobType(
           glob.assert(subLine[0].value === game.SkillCard.SUITS.COMBO_START &&
                       subLine[subLine.length - 1].value === game.SkillCard.SUITS.COMBO_END,
                       "Malformed subexpression in tree!");
+          subLine[0].setDepth(curDepth + 1);
+          subLine[subLine.length - 1].setDepth(curDepth + 1);
           subLine = glob.Util.subArray(subLine, 1, subLine.length - 2);
           node = this.treeFromLine(subLine, curDepth + 1, lastOrder);
         }
@@ -451,6 +453,7 @@ game.EquationGrid = new glob.NewGlobType(
           rowHeight = Math.round(this.bounds.h / this.rows),
           heightOffset = 0,
           boundsRef = null,
+          lastDepth = -1,
           colDelta = 0,
           colX = 0;
           rowY = 0;
@@ -469,13 +472,24 @@ game.EquationGrid = new glob.NewGlobType(
       for (i=0; i<this.line.length; ++i) {
         // Draw the tree element.
         heightOffset = rowHeight;
-        if (!this.line[i].isParenthesis()) {
+        if (this.line[i].getDepth() >= 0) {
+
+          if (lastDepth >= 0) {
+            if (lastDepth != this.line[i].getDepth()) {
+              colX += boundsRef.w;
+            }
+            else {
+              colX += game.cardOffsetX();
+            }
+          }
+
           boundsRef = this.line[i].getBoundsRef();
           colDelta = colX - boundsRef.x;
           this.line[i].setTreeOffset(colDelta, heightOffset);
           this.line[i].draw(ctxt);
           this.line[i].clearTreeOffset(colDelta, heightOffset);
-          colX += boundsRef.w;
+
+          lastDepth = this.line[i].getDepth();
         }
 
         // Draw the line element.
