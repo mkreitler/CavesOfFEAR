@@ -65,7 +65,7 @@ game.modules.statePlayDemo = {
           overlaps = this.equationGrid.getOverlappedSkillCard(this.curCard);
           hitCard = overlaps.best;
 
-          if (hitCard) {
+          if (hitCard && this.equationGrid.canCombo(hitCard)) {
             this.equationGrid.promote(hitCard,
                                       this.comboStartCard,
                                       this.comboEndCard);

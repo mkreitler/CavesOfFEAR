@@ -56,6 +56,7 @@ game.EquationGrid = new glob.NewGlobType(
     rows: 0,
     expression: "",
     bComboMode: false,
+    insertionIndeces: {left:-1, right:-1},
 
     buildTreeFromLine: function() {
       var newTree = null,
@@ -276,13 +277,15 @@ game.EquationGrid = new glob.NewGlobType(
       return result;
     },
 
-    addParenthesesToLine: function(promotedCard, comboStartCard, comboEndCard) {
+    getInsertionIndeces: function(promotedCard) {
       // Find the promoted card in the line.
       var i = 0,
           startIndex = 0,
           leftIndex = -1,
           rightIndex = -1,
           parenCount = 0,
+          bParenOnLeft = false,
+          bParenOnRight = false,
           bInserted = false;
 
       for (i=0; i<this.line.length; ++i) {
@@ -330,12 +333,57 @@ game.EquationGrid = new glob.NewGlobType(
         }
       }
 
+      bParenOnLeft = leftIndex > 0 &&
+                     this.line[leftIndex - 1].isParenthesis() &&
+                     this.line[leftIndex - 1].value === game.SkillCard.SUITS.COMBO_START;
+      bParenOnRight = rightIndex < this.line.length - 1 &&
+                      this.line[rightIndex + 1].isParenthesis() &&
+                      this.line[rightIndex + 1].value === game.SkillCard.SUITS.COMBO_END;
+
+      if (bParenOnLeft && bParenOnRight) {
+        // Already surrounded by parentheses.
+        leftIndex = -1;
+        rightIndex = -1;
+      }
+      else if (leftIndex === 0 && rightIndex === this.line.length - 1) {
+        // Parentheses bracket entire expression and therefore have
+        // no effect.
+        leftIndex = -1;
+        rightIndex = -1;
+      }
+
+      this.insertionIndeces.left = leftIndex;
+      this.insertionIndeces.right = rightIndex;
+
+      return this.insertionIndeces;
+    },
+
+    addParenthesesToLine: function(promotedCard, comboStartCard, comboEndCard) {
+      this.getInsertionIndeces(promotedCard);
+
       // Insert "combo start" and "combo end" cards.
-      if (leftIndex >= 0 && rightIndex >= 0) {
-        bInserted = this.insertIntoLine(comboStartCard, leftIndex, comboEndCard, rightIndex);
+      if (this.insertionIndeces.left >= 0 && this.insertionIndeces.right >= 0) {
+        bInserted = this.insertIntoLine(comboStartCard,
+                                        this.insertionIndeces.left,
+                                        comboEndCard,
+                                        this.insertionIndeces.right);
       }
 
       return bInserted;
+    },
+
+    canCombo: function(card) {
+      var bCanCombo = false;
+
+      if (card.isSkillCard() &&
+          !card.isCombo() &&
+          !card.isParenthesis()) {
+        this.getInsertionIndeces(card);
+        bCanCombo = this.insertionIndeces.left >= 0 &&
+                    this.insertionIndeces.right >= 0;
+      }
+
+      return bCanCombo;
     },
 
     repositionCards: function() {
@@ -357,6 +405,9 @@ game.EquationGrid = new glob.NewGlobType(
       glob.assert(leftCard != null && rightCard != null, "Can't insert null card into line!");
       glob.assert(leftIndex >= 0 && leftIndex <= this.line.length && rightIndex >= 0 && rightIndex <= this.line.length,
                   "Invalid insertion point!");
+
+      leftCard = leftCard.createCopy();
+      rightCard = rightCard.createCopy();
 
       this.line.splice(leftIndex, 0, leftCard);
       this.line.splice(rightIndex + 2, 0, rightCard);
@@ -425,8 +476,7 @@ game.EquationGrid = new glob.NewGlobType(
         // will be used for collision tests.
         heightOffset = 0;
         if (this.bComboMode &&
-            this.line[i].isSkillCard() &&
-            !this.line[i].isCombo()) {
+            this.canCombo(this.line[i])) {
           heightOffset += this.COMBO_HEIGHT_OFFSET;
         }
         this.line[i].setLineHeightOffset(heightOffset);
