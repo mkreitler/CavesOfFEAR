@@ -35,14 +35,20 @@ game.ModuleCard = {
     this.depth = newDepth;
   },
 
-  setTreeHeight: function(rowHeight) {
+  setTreeOffset: function(colDelta, rowHeight) {
     var rBounds = this.panel.getBoundsRef();
 
-    this.panel.setPos(rBounds.x, rBounds.y - (rowHeight * (this.depth + 1)));
+    this.panel.setPos(rBounds.x + colDelta, rBounds.y - (rowHeight * (this.depth + 1)));
 
     // Not the most efficient technique to copy these bounds every
     // frame. Doesn't hurt with so few cards, but still...
     this.treeBounds.copyFrom(rBounds);
+  },
+
+  clearTreeOffset: function(colDelta, rowHeight) {
+    var rBounds = this.panel.getBoundsRef();
+
+    this.panel.setPos(rBounds.x - colDelta, rBounds.y + (rowHeight * (this.depth + 1)));
   },
 
   setLineHeightOffset: function(heightOffset) {
@@ -59,12 +65,6 @@ game.ModuleCard = {
     this.panel.setPos(rBounds.x, rBounds.y + heightOffset);
 
     this.treeBounds.copyFrom(rBounds);
-  },
-
-  clearTreeHeight: function(rowHeight) {
-    var rBounds = this.panel.getBoundsRef();
-
-    this.panel.setPos(rBounds.x, rBounds.y + (rowHeight * (this.depth + 1)));
   },
 
   getBoundsRef: function() {

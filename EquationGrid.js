@@ -450,6 +450,9 @@ game.EquationGrid = new glob.NewGlobType(
       var i = 0,
           rowHeight = Math.round(this.bounds.h / this.rows),
           heightOffset = 0,
+          boundsRef = null,
+          colDelta = 0,
+          colX = 0;
           rowY = 0;
 
       ctxt.strokeStyle = this.bLineIsValid ? "#444444" : "red";
@@ -466,9 +469,14 @@ game.EquationGrid = new glob.NewGlobType(
       for (i=0; i<this.line.length; ++i) {
         // Draw the tree element.
         heightOffset = rowHeight;
-        this.line[i].setTreeHeight(heightOffset);
-        this.line[i].draw(ctxt);
-        this.line[i].clearTreeHeight(heightOffset);
+        if (!this.line[i].isParenthesis()) {
+          boundsRef = this.line[i].getBoundsRef();
+          colDelta = colX - boundsRef.x;
+          this.line[i].setTreeOffset(colDelta, heightOffset);
+          this.line[i].draw(ctxt);
+          this.line[i].clearTreeOffset(colDelta, heightOffset);
+          colX += boundsRef.w;
+        }
 
         // Draw the line element.
         // Since this version of the card is drawn last,
