@@ -309,6 +309,10 @@ game.EquationGrid = new glob.NewGlobType(
           }
           else if (this.line[i].value === game.SkillCard.SUITS.COMBO_START) {
             parenCount += 1;
+            if (parenCount === 0) {
+              leftIndex = i;
+              break;
+            }
           }
         }
         else { // Power card
@@ -325,8 +329,12 @@ game.EquationGrid = new glob.NewGlobType(
         if (this.line[i].isSkillCard()) {
           if (this.line[i].value === game.SkillCard.SUITS.COMBO_END) {
             parenCount -= 1;
+            if (parenCount === 0) {
+              rightIndex = i;
+              break;
+            }
           }
-          else if (this.line[i].value === game.SkillCard.SUITS_COMBO_START) {
+          else if (this.line[i].value === game.SkillCard.SUITS.COMBO_START) {
             parenCount += 1;
           }
         }
@@ -405,7 +413,7 @@ game.EquationGrid = new glob.NewGlobType(
 
       for (i=0; i<this.line.length; ++i) {
         card = this.line[i];
-        card.setPos(i * card.getBoundsRef().w,
+        card.setPos(i * game.cardOffsetX(), // card.getBoundsRef().w,
                     Math.round(this.bounds.y + (this.rows - 1) * this.bounds.h / this.rows +
                     glob.Graphics.getHeight() / this.LAST_LINE_SPACER));
       }
@@ -445,7 +453,7 @@ game.EquationGrid = new glob.NewGlobType(
       glob.assert(this.line, "Invalid line in EquationGrid.addToLine!");
       glob.assert(card != null, "Can't add null card to line!");
 
-      card.setPos(this.line.length * card.getBoundsRef().w,
+      card.setPos(this.line.length * game.cardOffsetX(), // card.getBoundsRef().w,
                   Math.round(this.bounds.y + (this.rows - 1) * this.bounds.h / this.rows +
                   glob.Graphics.getHeight() / this.LAST_LINE_SPACER));
       this.line.push(card);
@@ -482,25 +490,27 @@ game.EquationGrid = new glob.NewGlobType(
 
       for (i=0; i<this.line.length; ++i) {
         // Draw the tree element.
-        heightOffset = rowHeight;
-        if (this.line[i].getDepth() >= 0) {
+        if (!this.line[i].isParenthesis()) {
+          heightOffset = rowHeight;
+          if (this.line[i].getDepth() >= 0) {
 
-          if (lastDepth >= 0) {
-            if (lastDepth != this.line[i].getDepth()) {
-              colX += boundsRef.w;
+            if (lastDepth >= 0) {
+              if (lastDepth != this.line[i].getDepth()) {
+                colX += boundsRef.w;
+              }
+              else {
+                colX += game.cardOffsetX();
+              }
             }
-            else {
-              colX += game.cardOffsetX();
-            }
+
+            boundsRef = this.line[i].getBoundsRef();
+            colDelta = colX - boundsRef.x;
+            this.line[i].setTreeOffset(colDelta, heightOffset);
+            this.line[i].draw(ctxt);
+            this.line[i].clearTreeOffset(colDelta, heightOffset);
+
+            lastDepth = this.line[i].getDepth();
           }
-
-          boundsRef = this.line[i].getBoundsRef();
-          colDelta = colX - boundsRef.x;
-          this.line[i].setTreeOffset(colDelta, heightOffset);
-          this.line[i].draw(ctxt);
-          this.line[i].clearTreeOffset(colDelta, heightOffset);
-
-          lastDepth = this.line[i].getDepth();
         }
 
         // Draw the line element.
