@@ -284,8 +284,11 @@ game.EquationGrid = new glob.NewGlobType(
       var i = 0,
           startIndex = 0,
           leftIndex = -1,
-          rightIndex = -1,
+          rightIndex = this.line.length,
           parenCount = 0,
+          leftOrder = -1,
+          rightOrder = -1,
+          curOrder = promotedCard ? game.Operator.getSymbolExecOrder(promotedCard.stringVal()) : -1;
           bParenOnLeft = false,
           bParenOnRight = false,
           bInserted = false;
@@ -341,9 +344,17 @@ game.EquationGrid = new glob.NewGlobType(
       bParenOnRight = rightIndex < this.line.length - 1 &&
                       this.line[rightIndex + 1].isParenthesis() &&
                       this.line[rightIndex + 1].value === game.SkillCard.SUITS.COMBO_END;
+      leftOrder = leftIndex > 0 ? game.Operator.getSymbolExecOrder(this.line[leftIndex - 1].stringVal()) : -1;
+      rightOrder = rightIndex < this.line.length - 1 ? game.Operator.getSymbolExecOrder(this.line[rightIndex + 1].stringVal()) : -1;
 
       if (bParenOnLeft && bParenOnRight) {
         // Already surrounded by parentheses.
+        leftIndex = -1;
+        rightIndex = -1;
+      }
+      else if (leftOrder >= 0 && rightOrder >= 0 &&
+               leftOrder < curOrder && curOrder >= rightOrder) {
+        // No need for parentheses.
         leftIndex = -1;
         rightIndex = -1;
       }

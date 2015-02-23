@@ -104,14 +104,14 @@ game.modules.statePlayDemo = {
   // Implementation -----------------------------------------------------------
   createStacks: function() {
     this.powerStack = {
-      x: glob.Graphics.getWidth() * (0.5 + 1 / 20),
+      x: glob.Graphics.getWidth() / 20,
       y: glob.Graphics.getHeight() * this.STACK_START_FACTOR,
       cards: []
     };
     this.stacks.push(this.powerStack);
 
     this.skillStack = {
-      x: glob.Graphics.getWidth() / 20,
+      x: glob.Graphics.getWidth() * (0.5 + 1 / 20),
       y: glob.Graphics.getHeight() * this.STACK_START_FACTOR,
       cards: []
     };
